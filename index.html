@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}</style>
+<title>Îles du Dragon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap">
+<style>
+/* Layout: the open book centered on a night-sea desk, giant arrows on each side, page counter below */
+:root {
+  --sea: #15183a;
+  --sea-deep: #0b0d24;
+  --paper: #f6f2e8;
+  --ink: #e9e4d6;
+  --muted: #9a9cc4;
+  --dragon: #e2343f;
+  --font-display: "IM Fell English", Georgia, "Times New Roman", serif;
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: radial-gradient(ellipse at 50% 40%, var(--sea) 0%, var(--sea-deep) 75%);
+  background-color: var(--sea-deep);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.app {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 10px;
+  box-sizing: border-box;
+  gap: 8px;
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.05rem, 2.4vw, 1.6rem);
+  letter-spacing: .01em;
+  text-wrap: balance;
+}
+h1 em { color: var(--dragon); font-style: normal; letter-spacing: .04em; }
+.tool {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid color-mix(in srgb, var(--muted) 45%, transparent);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font: 600 .85rem var(--font-ui);
+  cursor: pointer;
+}
+.tool:hover { color: var(--ink); border-color: var(--ink); }
+.stage {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(6px, 1.5vw, 20px);
+  min-height: 0;
+}
+.book {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 2200px;
+}
+.spread {
+  display: flex;
+  max-width: 100%;
+  max-height: 100%;
+  box-shadow: 0 24px 60px rgba(0,0,0,.55), 0 4px 12px rgba(0,0,0,.4);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--paper);
+  transform-origin: center;
+}
+.spread img {
+  display: block;
+  max-height: var(--h);
+  max-width: var(--w);
+  height: auto;
+  width: auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+.spread.two img:first-child { box-shadow: inset -20px 0 30px rgba(0,0,0,.2); }
+.spread.two { position: relative; }
+.spread.two::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 50%;
+  width: 40px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,.18) 45%, rgba(0,0,0,.28) 50%, rgba(0,0,0,.18) 55%, transparent);
+  pointer-events: none;
+}
+.spread.in-next { animation: inNext .45s cubic-bezier(.2,.7,.2,1); }
+.spread.in-prev { animation: inPrev .45s cubic-bezier(.2,.7,.2,1); }
+@keyframes inNext { from { opacity: 0; transform: rotateY(-14deg) translateX(6%); } to { opacity: 1; transform: none; } }
+@keyframes inPrev { from { opacity: 0; transform: rotateY(14deg) translateX(-6%); } to { opacity: 1; transform: none; } }
+.arrow {
+  width: clamp(64px, 9vw, 110px);
+  height: clamp(64px, 9vw, 110px);
+  border-radius: 50%;
+  border: 3px solid var(--paper);
+  background: var(--dragon);
+  color: var(--paper);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,.45);
+  transition: transform .15s, opacity .2s, background .2s;
+  touch-action: manipulation;
+}
+.arrow svg { width: 55%; height: 55%; }
+.arrow:active { transform: scale(.92); }
+.arrow:focus-visible { outline: 4px solid #ffd54a; outline-offset: 4px; }
+.arrow:disabled { opacity: .18; cursor: default; box-shadow: none; }
+footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+}
+.count {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.dots { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 0; padding: 0;
+  background: color-mix(in srgb, var(--muted) 40%, transparent);
+  cursor: pointer;
+}
+.dot[aria-current="true"] { background: var(--dragon); transform: scale(1.3); }
+@media (max-width: 560px) {
+  .stage { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
+  .book { grid-column: 1; grid-row: 1; }
+  .nav-row { display: flex; justify-content: space-between; }
+  .dots { display: none; }
+}
+@media (min-width: 561px) { .nav-row { display: contents; } }
+.book { cursor: zoom-in; }
+.zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(8, 9, 26, .94);
+  animation: zoomIn .25s ease-out;
+}
+.zoom-scroll {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  display: flex;
+  padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+}
+.zoom-scroll img {
+  margin: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  cursor: zoom-in;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  border-radius: 3px;
+}
+.zoom.big .zoom-scroll img { max-width: none; max-height: none; width: 220%; cursor: zoom-out; }
+.zoom-close {
+  position: absolute;
+  top: calc(14px + env(safe-area-inset-top, 0px));
+  right: calc(14px + env(safe-area-inset-right, 0px));
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 3px solid var(--paper);
+  background: var(--dragon);
+  color: var(--paper);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,.5);
+}
+.zoom-close svg { width: 50%; height: 50%; }
+.zoom-close:focus-visible { outline: 4px solid #ffd54a; outline-offset: 4px; }
+.zoom-hint {
+  position: absolute;
+  left: 50%;
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.55);
+  color: var(--ink);
+  font-size: .95rem;
+  pointer-events: none;
+  white-space: nowrap;
+}
+@keyframes zoomIn { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .spread.in-next, .spread.in-prev, .zoom { animation: none; }
+}
+</style>
+
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>La fabuleuse découverte des <em>Îles du Dragon</em></h1>
+    <button class="tool" id="fs" type="button">Plein écran</button>
+  </header>
+  <div class="stage" id="stage">
+    <div class="nav-row">
+      <button class="arrow" id="prev" type="button" aria-label="Page précédente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4 7 12l8 8"/></svg>
+      </button>
+      <button class="arrow" id="next" type="button" aria-label="Page suivante" style="order:3">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 4 8 8-8 8"/></svg>
+      </button>
+    </div>
+    <div class="book" id="book"></div>
+  </div>
+  <footer>
+    <span class="count" id="count"></span>
+    <div class="dots" id="dots"></div>
+  </footer>
+</div>
+
+<div class="zoom" id="zoom" hidden>
+  <div class="zoom-scroll" id="zoomScroll">
+    <img id="zoomImg" alt="" draggable="false">
+  </div>
+  <button class="zoom-close" id="zoomClose" type="button" aria-label="Fermer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+  </button>
+  <p class="zoom-hint" id="zoomHint">Touche la page pour zoomer encore</p>
+</div>
+
+<script>
+const PAGES = ["pages/p01.jpg", "pages/p02.jpg", "pages/p03.jpg", "pages/p04.jpg", "pages/p05.jpg", "pages/p06.jpg", "pages/p07.jpg", "pages/p08.jpg", "pages/p09.jpg", "pages/p10.jpg", "pages/p11.jpg", "pages/p12.jpg", "pages/p13.jpg", "pages/p14.jpg", "pages/p15.jpg", "pages/p16.jpg", "pages/p17.jpg", "pages/p18.jpg", "pages/p19.jpg", "pages/p20.jpg", "pages/p21.jpg", "pages/p22.jpg", "pages/p23.jpg", "pages/p24.jpg", "pages/p25.jpg", "pages/p26.jpg", "pages/p27.jpg", "pages/p28.jpg", "pages/p29.jpg", "pages/p30.jpg", "pages/p31.jpg", "pages/p32.jpg", "pages/p33.jpg", "pages/p34.jpg", "pages/p35.jpg", "pages/p36.jpg", "pages/p37.jpg", "pages/p38.jpg", "pages/p39.jpg", "pages/p40.jpg", "pages/p41.jpg", "pages/p42.jpg", "pages/p43.jpg", "pages/p44.jpg", "pages/p45.jpg", "pages/p46.jpg", "pages/p47.jpg", "pages/p48.jpg", "pages/p49.jpg"];
+const SPREADS = [[0], [1], [2], [3, 4], [5, 6], [7, 8], [9, 10], [11, 12], [13, 14], [15, 16], [17, 18], [19, 20], [21, 22], [23, 24], [25, 26], [27, 28], [29, 30], [31, 32], [33, 34], [35, 36], [37, 38], [39, 40], [41, 42], [43, 44], [45, 46], [47], [48]];
+
+const book = document.getElementById('book');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+const countEl = document.getElementById('count');
+const dotsEl = document.getElementById('dots');
+const narrowMq = window.matchMedia('(max-width: 560px), (orientation: portrait) and (max-width: 900px)');
+
+let views = [];
+let index = 0;
+
+function buildViews() {
+  const currentPage = views.length ? views[index][0] : 0;
+  views = narrowMq.matches ? PAGES.map((_, i) => [i]) : SPREADS;
+  index = Math.max(0, views.findIndex(v => v.includes(currentPage)));
+  dotsEl.innerHTML = '';
+  views.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'dot';
+    d.type = 'button';
+    d.setAttribute('aria-label', 'Aller à ' + (i + 1));
+    d.addEventListener('click', () => go(i));
+    dotsEl.appendChild(d);
+  });
+}
+
+function render(dir) {
+  const v = views[index];
+  const s = document.createElement('div');
+  s.className = 'spread' + (v.length === 2 ? ' two' : '') + (dir ? ' in-' + dir : '');
+  const r = book.getBoundingClientRect();
+  s.style.setProperty('--h', r.height + 'px');
+  s.style.setProperty('--w', (r.width / v.length) + 'px');
+  v.forEach(p => {
+    const img = document.createElement('img');
+    img.src = PAGES[p];
+    img.alt = p === 0 ? 'Couverture' : 'Page ' + (p + 1);
+    img.draggable = false;
+    s.appendChild(img);
+  });
+  book.replaceChildren(s);
+  prevBtn.disabled = index === 0;
+  nextBtn.disabled = index === views.length - 1;
+  countEl.textContent = (index + 1) + ' / ' + views.length;
+  [...dotsEl.children].forEach((d, i) => d.setAttribute('aria-current', i === index));
+}
+
+function go(i) {
+  if (i < 0 || i >= views.length || i === index) return;
+  const dir = i > index ? 'next' : 'prev';
+  index = i;
+  render(dir);
+}
+
+prevBtn.addEventListener('click', () => go(index - 1));
+nextBtn.addEventListener('click', () => go(index + 1));
+document.addEventListener('keydown', e => {
+  if (!zoom.hidden) { if (e.key === 'Escape') closeZoom(); return; }
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(index + 1); }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(index - 1); }
+});
+
+let sx = null, sy = null;
+book.addEventListener('pointerdown', e => { sx = e.clientX; sy = e.clientY; });
+book.addEventListener('pointerup', e => {
+  if (sx === null) return;
+  const dx = e.clientX - sx, dy = e.clientY - sy;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(index + (dx < 0 ? 1 : -1));
+  else if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+    const img = [...book.querySelectorAll('img')].find(im => {
+      const r = im.getBoundingClientRect();
+      return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    });
+    if (img) openZoom(img);
+  }
+  sx = null;
+});
+
+const zoom = document.getElementById('zoom');
+const zoomImg = document.getElementById('zoomImg');
+const zoomScroll = document.getElementById('zoomScroll');
+const zoomHint = document.getElementById('zoomHint');
+
+function openZoom(img) {
+  zoomImg.src = img.src;
+  zoomImg.alt = img.alt;
+  zoom.classList.remove('big');
+  zoomHint.textContent = 'Touche la page pour zoomer encore';
+  zoom.hidden = false;
+  document.getElementById('zoomClose').focus();
+}
+
+function closeZoom() {
+  zoom.hidden = true;
+  zoom.classList.remove('big');
+}
+
+zoomImg.addEventListener('click', e => {
+  e.stopPropagation();
+  const r = zoomImg.getBoundingClientRect();
+  const fx = (e.clientX - r.left) / r.width;
+  const fy = (e.clientY - r.top) / r.height;
+  const big = zoom.classList.toggle('big');
+  zoomHint.textContent = big ? 'Glisse pour te déplacer, touche pour revenir' : 'Touche la page pour zoomer encore';
+  if (big) {
+    zoomScroll.scrollLeft = fx * zoomImg.offsetWidth - zoomScroll.clientWidth / 2;
+    zoomScroll.scrollTop = fy * zoomImg.offsetHeight - zoomScroll.clientHeight / 2;
+  }
+});
+zoomScroll.addEventListener('click', e => { if (e.target === zoomScroll) closeZoom(); });
+document.getElementById('zoomClose').addEventListener('click', closeZoom);
+
+document.getElementById('fs').addEventListener('click', async () => {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else await document.documentElement.requestFullscreen();
+  } catch (err) {}
+});
+
+narrowMq.addEventListener('change', () => { buildViews(); render(); });
+window.addEventListener('resize', () => render());
+buildViews();
+render();
+</script>
+
+</body>
+</html>

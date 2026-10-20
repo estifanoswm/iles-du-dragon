@@ -89,9 +89,10 @@ p { margin: 0; }
 .fact b { display: block; font-size: .85rem; letter-spacing: .1em; text-transform: uppercase; color: var(--sea-blue); }
 .fact span { font-size: 1.1rem; }
 .story { display: grid; gap: 12px; padding-left: 0; margin: 0; list-style: none; counter-reset: s; }
-.story li { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; }
+.story li { position: relative; padding-left: 52px; min-height: 36px; padding-top: 4px; }
 .story li::before {
   counter-increment: s; content: counter(s);
+  position: absolute; left: 0; top: 0;
   width: 36px; height: 36px; border-radius: 50%;
   background: var(--sea-blue); color: #fff; font-weight: 700;
   display: grid; place-items: center;

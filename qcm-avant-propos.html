@@ -282,9 +282,10 @@ p { margin: 0; }
       </div>
     </div>
     <p>Les corrections sont écrites sous chaque question. Les réponses en <b style="color:var(--ok)">vert</b> sont les bonnes réponses. Les réponses en <b style="color:var(--bad)">rouge</b> sont tes erreurs.</p>
+    <p><b>Tu pourras refaire ce QCM demain</b> pour améliorer ta note.</p>
     <div class="actions">
       <button class="btn secondary" type="button" id="seeFix">Voir mes corrections</button>
-      <button class="btn" type="button" id="retry">Recommencer le QCM</button>
+      <button class="btn" type="button" id="retry" hidden>Recommencer le QCM</button>
     </div>
   </section>
 
@@ -369,9 +370,20 @@ const QUESTIONS = [
   }
 ];
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_Uz4nZw1Tum6Pf_vYwzVTILhR5LRfxrKcxs16wLwtl5J1rLeFA7CllHrp6ct8ZKCQ8w/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7sk0l0E9Y2F7Z7_C0QNr8cWZM1JjNOynuUCXECPzjDKGiOPTx81WjLvx-uslsx06AnQ/exec";
 const QUIZ_NAME = "Avant-propos";
 const LETTERS = ["A", "B", "C", "D"];
+function todayKey() {
+  const d = new Date();
+  return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+}
+function normName(n) {
+  return n.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
+}
+function doneKey(n) { return "qcm|" + QUIZ_NAME + "|" + normName(n) + "|" + todayKey(); }
+function readDone(n) { try { return localStorage.getItem(doneKey(n)); } catch (err) { return null; } }
+function writeDone(n, s) { try { localStorage.setItem(doneKey(n), String(s)); } catch (err) {} }
+
 const form = document.getElementById("quiz");
 const warn = document.getElementById("warn");
 const results = document.getElementById("results");
@@ -440,6 +452,12 @@ form.addEventListener("submit", e => {
     document.getElementById("studentName").scrollIntoView({ behavior: "smooth", block: "center" });
     return;
   }
+  const already = readDone(studentName);
+  if (already !== null) {
+    warn.textContent = "Tu as déjà fait ce QCM aujourd'hui (ta note : " + already + " / " + QUESTIONS.length + "). Tu pourras le refaire demain.";
+    warn.hidden = false;
+    return;
+  }
   warn.hidden = true;
   let score = 0;
   form.classList.add("locked");
@@ -482,6 +500,7 @@ form.addEventListener("submit", e => {
   document.getElementById("scoreSub").textContent = errors === 0
     ? "Aucune erreur."
     : errors === 1 ? "1 erreur à corriger." : errors + " erreurs à corriger.";
+  writeDone(name, score);
   sendResult(name, score, answers);
   document.getElementById("studentName").disabled = true;
   submitRow.hidden = true;

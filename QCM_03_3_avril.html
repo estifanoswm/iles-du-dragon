@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>3 avril : compréhension</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Andika:wght@400;700&display=swap">
+<style>
+/* Layout: a single reading column on paper, set on the night-sea background of the book; lesson first, then the quiz, then the results */
+:root {
+  --sea: #15183a;
+  --sea-deep: #0b0d24;
+  --paper: #f8f4ea;
+  --paper-edge: #e6dcc6;
+  --ink: #2a2733;
+  --soft: #6a6478;
+  --dragon: #d7303b;
+  --sea-blue: #2f5d9e;
+  --ok: #2e7d4f;
+  --ok-bg: #e3f2e8;
+  --bad: #b3261e;
+  --bad-bg: #fbe5e3;
+  --pick: #fff1c9;
+  --font-display: "IM Fell English", Georgia, "Times New Roman", serif;
+  --font-body: "Andika", "Trebuchet MS", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: radial-gradient(ellipse at 50% 0%, var(--sea) 0%, var(--sea-deep) 70%) fixed;
+  background-color: var(--sea-deep);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 48px;
+}
+.wrap { max-width: 860px; margin: 0 auto; display: grid; gap: 28px; }
+.masthead { color: var(--paper); text-align: left; }
+.masthead .eyebrow {
+  font-size: .85rem; letter-spacing: .14em; text-transform: uppercase; color: #a9acd6;
+}
+.masthead h1 {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+.masthead h1 em { color: #ff6b73; font-style: italic; }
+.sheet {
+  background: var(--paper);
+  border-radius: 6px;
+  padding: clamp(20px, 4vw, 40px);
+  box-shadow: 0 18px 50px rgba(0,0,0,.45);
+  display: grid;
+  gap: 22px;
+}
+h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+  color: var(--sea-blue);
+  line-height: 1.2;
+}
+h3 { margin: 0 0 6px; font-size: 1.2rem; color: var(--ink); }
+p { margin: 0; }
+.lead { font-size: 1.25rem; }
+.pages { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pages button {
+  border: 1px solid var(--paper-edge); padding: 0; background: #fff; border-radius: 4px;
+  cursor: zoom-in; overflow: hidden;
+}
+.pages img { display: block; width: 100%; height: auto; }
+.pages-cap { font-size: .95rem; color: var(--soft); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.fact {
+  border-top: 4px solid var(--sea-blue);
+  background: #fff;
+  border-radius: 0 0 6px 6px;
+  padding: 12px 14px;
+}
+.fact b { display: block; font-size: .85rem; letter-spacing: .1em; text-transform: uppercase; color: var(--sea-blue); }
+.fact span { font-size: 1.1rem; }
+.story { display: grid; gap: 12px; padding-left: 0; margin: 0; list-style: none; counter-reset: s; }
+.story li { position: relative; padding-left: 52px; min-height: 36px; padding-top: 4px; }
+.story li::before {
+  counter-increment: s; content: counter(s);
+  position: absolute; left: 0; top: 0;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--sea-blue); color: #fff; font-weight: 700;
+  display: grid; place-items: center;
+}
+.words { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px 24px; margin: 0; }
+.words div { border-bottom: 1px dashed var(--paper-edge); padding-bottom: 8px; }
+.words dt { font-weight: 700; color: var(--dragon); }
+.words dd { margin: 0; }
+.tip {
+  background: var(--pick); border-radius: 6px; padding: 14px 16px;
+}
+.name-row { display: grid; gap: 6px; }
+.name-row label { font-weight: 700; }
+.name-row input {
+  font: inherit; padding: 12px 14px; border-radius: 8px; border: 2px solid var(--paper-edge);
+  background: #fff; max-width: 360px; width: 100%;
+}
+.name-row input:focus { outline: none; border-color: var(--sea-blue); }
+.q { display: grid; gap: 10px; padding-top: 18px; border-top: 1px solid var(--paper-edge); }
+.q:first-of-type { border-top: 0; padding-top: 0; }
+.q-head { display: flex; gap: 12px; align-items: baseline; }
+.q-num {
+  flex: none; font-family: var(--font-display); font-size: 1.6rem; color: var(--dragon);
+  min-width: 2ch; font-variant-numeric: tabular-nums;
+}
+.q-text { font-weight: 700; font-size: 1.2rem; }
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+.opt { position: relative; }
+.opt input { position: absolute; opacity: 0; pointer-events: none; }
+.opt label {
+  display: flex; gap: 12px; align-items: center;
+  padding: 12px 14px; min-height: 56px;
+  border: 2px solid var(--paper-edge); border-radius: 10px; background: #fff;
+  cursor: pointer; transition: border-color .15s, background .15s;
+}
+.opt label::before {
+  content: attr(data-letter);
+  flex: none; width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700;
+  border: 2px solid var(--paper-edge); color: var(--soft);
+}
+.opt input:checked + label { border-color: var(--sea-blue); background: var(--pick); }
+.opt input:checked + label::before { background: var(--sea-blue); border-color: var(--sea-blue); color: #fff; }
+.opt input:focus-visible + label { outline: 3px solid var(--sea-blue); outline-offset: 2px; }
+.q.missing .opt label { border-color: var(--dragon); }
+.q.missing .q-text::after { content: "  ← choisis une réponse"; color: var(--dragon); font-weight: 400; font-size: 1rem; }
+.locked .opt label { cursor: default; }
+.locked .opt.right label { border-color: var(--ok); background: var(--ok-bg); }
+.locked .opt.right label::before { background: var(--ok); border-color: var(--ok); color: #fff; }
+.locked .opt.wrong label { border-color: var(--bad); background: var(--bad-bg); }
+.locked .opt.wrong label::before { background: var(--bad); border-color: var(--bad); color: #fff; }
+.feedback { border-radius: 8px; padding: 12px 14px; font-size: 1.05rem; }
+.feedback.good { background: var(--ok-bg); color: #1f5a37; }
+.feedback.fix { background: var(--bad-bg); color: #6e1a15; }
+.feedback b { display: block; }
+.feedback .why { margin-top: 6px; color: var(--ink); }
+.feedback .where { margin-top: 6px; font-style: italic; color: var(--soft); }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn {
+  font: 700 1.15rem var(--font-body);
+  padding: 14px 26px; min-height: 56px;
+  border-radius: 999px; border: 3px solid var(--paper);
+  background: var(--dragon); color: #fff; cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,.25);
+}
+.btn.secondary { background: var(--sea-blue); }
+.btn:focus-visible { outline: 3px solid var(--sea-blue); outline-offset: 3px; }
+.btn:active { transform: scale(.97); }
+.warn { color: var(--dragon); font-weight: 700; }
+.score {
+  display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center;
+  background: #fff; border: 2px solid var(--paper-edge); border-radius: 10px; padding: 18px 20px;
+}
+.score-num {
+  font-family: var(--font-display); font-size: clamp(3rem, 12vw, 4.6rem); line-height: 1;
+  color: var(--dragon); font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.score-num small { font-size: .45em; color: var(--soft); }
+.score-msg { font-size: 1.2rem; font-weight: 700; }
+.score-sub { color: var(--soft); }
+.zoom {
+  position: fixed; inset: 0; z-index: 20; background: rgba(8,9,26,.94);
+  display: flex; padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+}
+.zoom img { margin: auto; max-width: 100%; max-height: 100%; object-fit: contain; }
+.zoom button {
+  position: absolute; top: calc(14px + env(safe-area-inset-top, 0px)); right: calc(14px + env(safe-area-inset-right, 0px));
+  width: 64px; height: 64px; border-radius: 50%; border: 3px solid var(--paper);
+  background: var(--dragon); color: #fff; font-size: 2rem; cursor: pointer; line-height: 1;
+}
+.pages.single { grid-template-columns: 1fr; max-width: 640px; }
+@media (max-width: 560px) {
+  body { font-size: 1.05rem; }
+  .pages { grid-template-columns: 1fr; }
+  .score { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">La fabuleuse découverte des Îles du Dragon · Pages 12 et 13</div>
+    <h1>Le <em>3 avril</em></h1>
+  </header>
+
+  <section class="sheet" aria-labelledby="t-explain">
+    <h2 id="t-explain">1. Je comprends le texte</h2>
+
+    <p class="lead">Le lendemain, les hommes retournent chercher le sextant perdu. En chemin, ils tombent sur une plante incroyable, qui sent bon… mais qui est dangereuse !</p>
+
+    <div class="pages">
+      <button type="button" data-zoom="0" aria-label="Agrandir la page 12"><img src="p12.jpg" alt="Page 12 du livre"></button>
+      <button type="button" data-zoom="1" aria-label="Agrandir la page 13"><img src="p13.jpg" alt="Page 13 du livre"></button>
+    </div>
+    <p class="pages-cap">Touche une page pour la relire en grand.</p>
+
+    <div>
+      <h3>Les informations importantes</h3>
+      <div class="facts">
+        <div class="fact"><b>Quand ?</b><span>Le 3 avril, à midi.</span></div>
+        <div class="fact"><b>Qui ?</b><span>Parker et quatre hommes, dont les matelots Kelly, O'Keefe et Martyn.</span></div>
+        <div class="fact"><b>Pourquoi ?</b><span>Pour retrouver le sextant du capitaine.</span></div>
+        <div class="fact"><b>La découverte</b><span>Une plante géante qui sent le parfum préféré de chacun.</span></div>
+      </div>
+    </div>
+
+    <div>
+      <h3>Le 3 avril en 6 étapes</h3>
+      <ol class="story">
+        <li>À midi, cinq hommes repartent vers le sommet. Ils se séparent pour mieux chercher le sextant.</li>
+        <li>Parker entend deux coups de feu à sa droite et court dans cette direction.</li>
+        <li>Le matelot <b>Kelly</b> essaie d'éloigner son camarade <b>O'Keefe</b> d'une plante qui sent très fort.</li>
+        <li>Chacun sent son <b>parfum préféré</b> : pour Parker, le ragoût de faisan ; pour Martyn, les biscuits secs du bateau.</li>
+        <li>Sous la plante, il y a un <b>bulbe</b> rempli d'un liquide <b>corrosif</b>.</li>
+        <li>L'odeur vient d'un fruit protégé par des tiges épineuses. Le jus de la plante donne de l'urticaire à O'Keefe.</li>
+      </ol>
+    </div>
+
+    <div>
+      <h3>Les mots difficiles</h3>
+      <dl class="words">
+        <div><dt>se séparer</dt><dd>partir chacun de son côté.</dd></div>
+        <div><dt>un matelot</dt><dd>un marin.</dd></div>
+        <div><dt>odorant</dt><dd>qui a une odeur forte.</dd></div>
+        <div><dt>un ragoût de faisan</dt><dd>un plat de viande de faisan (un oiseau) cuite longtemps en sauce.</dd></div>
+        <div><dt>infect</dt><dd>très mauvais, dégoûtant.</dd></div>
+        <div><dt>un bulbe</dt><dd>la partie ronde d'une plante, sous la terre, comme un oignon.</dd></div>
+        <div><dt>corrosif</dt><dd>qui ronge et abîme ce qu'il touche, comme un acide.</dd></div>
+        <div><dt>un entrelacs</dt><dd>des choses croisées et mêlées les unes aux autres.</dd></div>
+        <div><dt>épineux</dt><dd>couvert d'épines.</dd></div>
+        <div><dt>l'urticaire</dt><dd>des plaques rouges qui grattent sur la peau.</dd></div>
+        <div><dt>le suc</dt><dd>le jus d'une plante.</dd></div>
+        <div><dt>une plante carnivore</dt><dd>une plante qui attrape et digère des insectes.</dd></div>
+      </dl>
+    </div>
+
+    <p class="tip">Avant de commencer le QCM, relis bien les 6 étapes et les mots difficiles. Tu peux remonter ici pendant le QCM si tu as besoin.</p>
+  </section>
+
+  <section class="sheet" aria-labelledby="t-quiz" id="quizSheet">
+    <h2 id="t-quiz">2. Je réponds au QCM</h2>
+    <p>Pour chaque question, touche <b>une seule</b> réponse. Quand tu as répondu aux 10 questions, touche « Valider mes réponses ».</p>
+
+    <div class="name-row">
+      <label for="studentName">Ton prénom et ton nom</label>
+      <input id="studentName" type="text" autocomplete="off" placeholder="Exemple : Sara Bekele">
+    </div>
+
+    <form id="quiz" novalidate></form>
+
+    <div class="actions" id="submitRow">
+      <button class="btn" type="submit" form="quiz">Valider mes réponses</button>
+      <span class="warn" id="warn" hidden></span>
+    </div>
+  </section>
+
+  <section class="sheet" id="results" hidden aria-labelledby="t-res">
+    <h2 id="t-res">3. Mon résultat</h2>
+    <div class="score">
+      <div class="score-num" id="scoreNum"></div>
+      <div>
+        <p class="score-msg" id="scoreMsg"></p>
+        <p class="score-sub" id="scoreSub"></p>
+        <p class="score-sub" id="sendStatus"></p>
+      </div>
+    </div>
+    <p>Les corrections sont écrites sous chaque question. Les réponses en <b style="color:var(--ok)">vert</b> sont les bonnes réponses. Les réponses en <b style="color:var(--bad)">rouge</b> sont tes erreurs.</p>
+    <p><b>Tu pourras refaire ce QCM demain</b> pour améliorer ta note.</p>
+    <div class="actions">
+      <button class="btn secondary" type="button" id="seeFix">Voir mes corrections</button>
+      <button class="btn" type="button" id="retry" hidden>Recommencer le QCM</button>
+    </div>
+  </section>
+
+</div>
+
+<div class="zoom" id="zoom" hidden>
+  <img id="zoomImg" alt="">
+  <button type="button" id="zoomClose" aria-label="Fermer">×</button>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    "q": "Pourquoi les hommes repartent-ils vers le sommet ?",
+    "opts": [
+      "Pour chasser l'immense oiseau",
+      "Pour cueillir des fruits",
+      "Pour observer les volcans",
+      "Pour retrouver le sextant du capitaine"
+    ],
+    "a": 3,
+    "why": "Ils veulent retrouver le sextant que le capitaine a perdu la veille, pendant l'attaque.",
+    "where": "« Nous avions décidé de nous séparer pour avoir plus de chances de retrouver le sextant. »"
+  },
+  {
+    "q": "Pourquoi décident-ils de se séparer ?",
+    "opts": [
+      "Parce qu'ils se sont disputés",
+      "Parce qu'ils ont peur",
+      "Parce qu'ils sont perdus",
+      "Pour avoir plus de chances de retrouver le sextant"
+    ],
+    "a": 3,
+    "why": "À plusieurs endroits en même temps, on cherche plus vite. C'est une bonne idée pour retrouver un objet perdu.",
+    "where": "« Nous avions décidé de nous séparer pour avoir plus de chances de retrouver le sextant. »"
+  },
+  {
+    "q": "Qu'entend Parker au bout de quelques centaines de mètres ?",
+    "opts": [
+      "Le cri d'un oiseau",
+      "Un terrible grondement",
+      "Deux coups de feu, à sa droite",
+      "Un marin qui chante"
+    ],
+    "a": 2,
+    "why": "Parker entend deux coups de feu. Il comprend qu'il se passe quelque chose et court dans cette direction.",
+    "where": "« … j'entendis deux coups de feu, à notre droite. »"
+  },
+  {
+    "q": "Que fait le matelot Kelly ?",
+    "opts": [
+      "Il essaie d'éloigner O'Keefe d'une plante",
+      "Il chasse un animal",
+      "Il cueille des fruits",
+      "Il cherche de l'eau"
+    ],
+    "a": 0,
+    "why": "Kelly tire son camarade O'Keefe pour l'éloigner d'une plante étrange qui sent très fort.",
+    "where": "« … nous vîmes le matelot Kelly en train d'essayer d'éloigner son camarade O'Keefe d'une plante étonnamment odorante. »"
+  },
+  {
+    "q": "Pour Parker, quelle odeur a la plante ?",
+    "opts": [
+      "Celle du ragoût de faisan",
+      "Celle des biscuits secs",
+      "Celle de l'anguille",
+      "Celle des roses"
+    ],
+    "a": 0,
+    "why": "Pour Parker, la plante sent le ragoût de faisan, son plat préféré.",
+    "where": "« Pour moi, elle dégageait l'odeur de mon plat préféré, le ragoût de faisan… »"
+  },
+  {
+    "q": "Pourquoi chaque homme sent-il une odeur différente ?",
+    "opts": [
+      "Il y a plusieurs plantes différentes",
+      "La plante sent le parfum préféré de chacun",
+      "Le vent change tout le temps",
+      "Ils ont tous le rhume"
+    ],
+    "a": 1,
+    "why": "C'est une plante magique et dangereuse : chacun sent son odeur préférée. C'est un piège pour attirer !",
+    "where": "« … elle sentait pour chacun de nous un parfum différent, notre parfum préféré. »"
+  },
+  {
+    "q": "Pour le matelot Martyn, quelle odeur a la plante ?",
+    "opts": [
+      "Celle des biscuits secs servis sur le bateau",
+      "Celle du ragoût de faisan",
+      "Celle du pain chaud",
+      "Celle de la mer"
+    ],
+    "a": 0,
+    "why": "Pour Martyn, la plante sent les biscuits secs du bateau. Parker trouve ces biscuits infects (très mauvais), ce qui le fait sourire !",
+    "where": "« (Pour le matelot Martyn, c'était celui des biscuits secs qu'on sert à bord et qui sont, je vous le garantis, infects !) »"
+  },
+  {
+    "q": "Que contient le bulbe de la plante ?",
+    "opts": [
+      "De l'eau sucrée",
+      "Un liquide corrosif",
+      "Du miel",
+      "Des graines"
+    ],
+    "a": 1,
+    "why": "Le bulbe est rempli d'un liquide corrosif : il ronge et abîme ce qu'il touche. C'est dangereux !",
+    "where": "« Ce bulbe est rempli d'un liquide (à l'issue de plusieurs tests, il s'avère que c'est une substance corrosive). »"
+  },
+  {
+    "q": "Qu'arrive-t-il à O'Keefe ?",
+    "opts": [
+      "Il s'endort pendant deux jours",
+      "Il est mordu par un rat d'eau",
+      "Il a de l'urticaire à cause du jus de la plante",
+      "Il perd la vue"
+    ],
+    "a": 2,
+    "why": "Le suc (le jus) de la plante a donné à O'Keefe une sorte d'urticaire : des plaques rouges qui grattent.",
+    "where": "« O'Keefe souffre maintenant d'une sorte d'urticaire causée par le suc de la plante. »"
+  },
+  {
+    "q": "À quelles plantes Parker compare-t-il cette plante ?",
+    "opts": [
+      "À des arbres fruitiers",
+      "À des plantes carnivores, mais beaucoup plus grandes",
+      "À des roses",
+      "À des algues"
+    ],
+    "a": 1,
+    "why": "Elle ressemble à des plantes carnivores connues, mais elle est bien plus grande. Les feuilles servent aussi de piège.",
+    "where": "« Celle-ci rappelle certaines plantes carnivores telles que la Dionaea muscipula et la Sarracenia flava, mais de proportions nettement supérieures. »"
+  }
+];
+
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7sk0l0E9Y2F7Z7_C0QNr8cWZM1JjNOynuUCXECPzjDKGiOPTx81WjLvx-uslsx06AnQ/exec";
+const QUIZ_NAME = "3 avril";
+const LETTERS = ["A", "B", "C", "D"];
+function todayKey() {
+  const d = new Date();
+  return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+}
+function normName(n) {
+  return n.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
+}
+function doneKey(n) { return "qcm|" + QUIZ_NAME + "|" + normName(n) + "|" + todayKey(); }
+function readDone(n) { try { return localStorage.getItem(doneKey(n)); } catch (err) { return null; } }
+function writeDone(n, s) { try { localStorage.setItem(doneKey(n), String(s)); } catch (err) {} }
+
+const form = document.getElementById("quiz");
+const warn = document.getElementById("warn");
+const results = document.getElementById("results");
+const submitRow = document.getElementById("submitRow");
+
+function build() {
+  form.innerHTML = "";
+  form.classList.remove("locked");
+  QUESTIONS.forEach((item, i) => {
+    const box = document.createElement("fieldset");
+    box.className = "q";
+    box.style.border = "0";
+    box.style.margin = "0";
+    box.style.padding = i === 0 ? "0" : "18px 0 0";
+    box.id = "q" + i;
+    const head = document.createElement("div");
+    head.className = "q-head";
+    head.innerHTML = '<span class="q-num">' + (i + 1) + '</span><legend class="q-text"></legend>';
+    head.querySelector(".q-text").textContent = item.q;
+    box.appendChild(head);
+    const opts = document.createElement("div");
+    opts.className = "opts";
+    item.opts.forEach((text, j) => {
+      const id = "q" + i + "o" + j;
+      const wrap = document.createElement("div");
+      wrap.className = "opt";
+      wrap.innerHTML = '<input type="radio" name="q' + i + '" id="' + id + '" value="' + j + '"><label for="' + id + '" data-letter="' + LETTERS[j] + '"></label>';
+      wrap.querySelector("label").append(text);
+      opts.appendChild(wrap);
+    });
+    box.appendChild(opts);
+    box.addEventListener("change", () => box.classList.remove("missing"));
+    form.appendChild(box);
+  });
+}
+
+function message(score) {
+  const total = QUESTIONS.length;
+  if (score === total) return "Bravo, c'est parfait !";
+  if (score >= total * 0.8) return "Très bien, tu as bien compris ce passage.";
+  if (score >= total * 0.6) return "C'est bien. Regarde tes corrections pour progresser.";
+  if (score >= total * 0.4) return "Tu peux faire mieux. Relis l'explication et les corrections.";
+  return "Relis l'explication tranquillement, puis recommence le QCM.";
+}
+
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const answers = QUESTIONS.map((_, i) => {
+    const c = form.querySelector('input[name="q' + i + '"]:checked');
+    return c ? Number(c.value) : null;
+  });
+  const missing = answers.map((a, i) => a === null ? i : -1).filter(i => i >= 0);
+  if (missing.length) {
+    missing.forEach(i => document.getElementById("q" + i).classList.add("missing"));
+    warn.textContent = missing.length === 1
+      ? "Il te manque 1 réponse (question " + (missing[0] + 1) + ")."
+      : "Il te manque " + missing.length + " réponses (questions " + missing.map(i => i + 1).join(", ") + ").";
+    warn.hidden = false;
+    document.getElementById("q" + missing[0]).scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  const studentName = document.getElementById("studentName").value.trim();
+  if (studentName.length < 2) {
+    warn.textContent = "Écris ton prénom et ton nom avant de valider.";
+    warn.hidden = false;
+    document.getElementById("studentName").focus();
+    document.getElementById("studentName").scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  const already = readDone(studentName);
+  if (already !== null) {
+    warn.textContent = "Tu as déjà fait ce QCM aujourd'hui (ta note : " + already + " / " + QUESTIONS.length + "). Tu pourras le refaire demain.";
+    warn.hidden = false;
+    return;
+  }
+  warn.hidden = true;
+  let score = 0;
+  form.classList.add("locked");
+  QUESTIONS.forEach((item, i) => {
+    const box = document.getElementById("q" + i);
+    const chosen = answers[i];
+    const good = chosen === item.a;
+    if (good) score++;
+    box.querySelectorAll("input").forEach(inp => { inp.disabled = true; });
+    box.querySelectorAll(".opt")[item.a].classList.add("right");
+    if (!good) box.querySelectorAll(".opt")[chosen].classList.add("wrong");
+    const fb = document.createElement("div");
+    fb.className = "feedback " + (good ? "good" : "fix");
+    if (good) {
+      fb.innerHTML = "<b>Bonne réponse !</b>";
+      const w = document.createElement("p");
+      w.className = "why";
+      w.textContent = item.why;
+      fb.appendChild(w);
+    } else {
+      const t = document.createElement("b");
+      t.textContent = "Tu as répondu " + LETTERS[chosen] + ". La bonne réponse était " + LETTERS[item.a] + " : " + item.opts[item.a] + ".";
+      fb.appendChild(t);
+      const w = document.createElement("p");
+      w.className = "why";
+      w.textContent = item.why;
+      fb.appendChild(w);
+      const where = document.createElement("p");
+      where.className = "where";
+      where.textContent = "Dans le texte : " + item.where;
+      fb.appendChild(where);
+    }
+    box.appendChild(fb);
+  });
+  const name = document.getElementById("studentName").value.trim();
+  document.getElementById("scoreNum").innerHTML = score + "<small> / " + QUESTIONS.length + "</small>";
+  document.getElementById("scoreMsg").textContent = (name ? name + ", " : "") + message(score).charAt(0).toLowerCase() + message(score).slice(1);
+  if (!name) document.getElementById("scoreMsg").textContent = message(score);
+  const errors = QUESTIONS.length - score;
+  document.getElementById("scoreSub").textContent = errors === 0
+    ? "Aucune erreur."
+    : errors === 1 ? "1 erreur à corriger." : errors + " erreurs à corriger.";
+  writeDone(name, score);
+  sendResult(name, score, answers);
+  document.getElementById("studentName").disabled = true;
+  submitRow.hidden = true;
+  results.hidden = false;
+  results.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+document.getElementById("seeFix").addEventListener("click", () => {
+  const firstWrong = form.querySelector(".opt.wrong");
+  (firstWrong ? firstWrong.closest(".q") : form).scrollIntoView({ behavior: "smooth", block: "center" });
+});
+
+function sendResult(name, score, answers) {
+  const status = document.getElementById("sendStatus");
+  if (!SCRIPT_URL.startsWith("https://")) { status.textContent = ""; return; }
+  status.textContent = "Envoi de ton résultat…";
+  const payload = {
+    quiz: QUIZ_NAME,
+    name: name,
+    score: score,
+    total: QUESTIONS.length,
+    answers: answers.map((a, i) => (i + 1) + ":" + LETTERS[a] + (a === QUESTIONS[i].a ? "✓" : "✗")).join(" ")
+  };
+  fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) })
+    .then(() => { status.textContent = "Ton résultat a bien été envoyé à ton enseignant."; })
+    .catch(() => { status.textContent = "Ton résultat n'a pas pu être envoyé. Vérifie la connexion internet, puis montre ta note à ton enseignant."; });
+}
+
+document.getElementById("retry").addEventListener("click", () => {
+  build();
+  document.getElementById("studentName").disabled = false;
+  results.hidden = true;
+  submitRow.hidden = false;
+  warn.hidden = true;
+  document.getElementById("quizSheet").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+const zoom = document.getElementById("zoom");
+const zoomImg = document.getElementById("zoomImg");
+document.querySelectorAll("[data-zoom]").forEach(b => b.addEventListener("click", () => {
+  zoomImg.src = b.querySelector("img").src;
+  zoomImg.alt = b.querySelector("img").alt;
+  zoom.hidden = false;
+}));
+zoom.addEventListener("click", e => { if (e.target !== zoomImg) zoom.hidden = true; });
+document.addEventListener("keydown", e => { if (e.key === "Escape") zoom.hidden = true; });
+
+build();
+</script>
+</body>
+</html>
